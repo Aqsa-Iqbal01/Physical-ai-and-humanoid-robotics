@@ -1,0 +1,14 @@
+.vscode/
+*.log
+*.tmp
+*.swp
+Thumbs.db
+.DS_Store
+node_modules/
+dist/
+build/
+venv/
+__pycache__/
+*.pyc
+
+
