@@ -83,6 +83,22 @@ Readers develop an understanding of emerging trends, challenges, and future poss
 
 ---
 
+### User Story 6 - Interactive Learning with a Chatbot (Priority: P1)
+
+Readers can ask questions about the book's content and get immediate, contextually relevant answers from an integrated chatbot.
+
+**Why this priority**: To enhance comprehension and provide an interactive way for readers to clarify doubts and explore topics more deeply.
+
+**Independent Test**: Can be tested by a user asking questions and evaluating the relevance and accuracy of the chatbot's answers.
+
+**Acceptance Scenarios**:
+
+1. **Given** a reader is on any chapter page, **When** they ask the chatbot a question about the content, **Then** the chatbot provides an accurate answer based on the book's text.
+2. **Given** a reader selects a specific paragraph or section of text, **When** they ask the chatbot a question about the selection, **Then** the chatbot's answer is primarily based on the selected context.
+3. **Given** a reader asks a question that is outside the scope of the book, **Then** the chatbot gracefully indicates that it cannot answer.
+
+---
+
 ### Edge Cases
 
 - What happens when a reader has advanced knowledge in one area (e.g., AI) but limited in another (e.g., robotics)? The book should provide sufficient context and foundational explanations in early chapters to bridge knowledge gaps, making sure cross-disciplinary readers can follow.
@@ -101,6 +117,13 @@ Readers develop an understanding of emerging trends, challenges, and future poss
 - **FR-007**: Book MUST include real-world examples to illustrate concepts.
 - **FR-008**: Book MUST be written for an intermediate-to-advanced audience in robotics, AI, and human-machine interaction.
 - **FR-009**: Book MUST provide clear definitions for technical terms.
+- **FR-010**: The system MUST feature an integrated RAG chatbot.
+- **FR-011**: The chatbot MUST be able to answer questions based on the entire content of the book.
+- **FR-012**: The chatbot MUST be able to answer questions based on a user-selected portion of the text.
+- **FR-013**: The backend MUST be a FastAPI application.
+- **FR-014**: The system MUST use Qdrant Cloud for vector storage and retrieval.
+- **FR-015**: The system MUST use a Neon Serverless Postgres database for storing chat history.
+- **FR-016**: The chatbot's answer generation MUST be handled by the OpenAI Agents/ChatKit SDKs.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -109,6 +132,9 @@ Readers develop an understanding of emerging trends, challenges, and future poss
 - **AI Systems**: The software and algorithmic components embedded within humanoid robots responsible for tasks such as perception (vision, hearing), decision-making, motor control, learning from experience, and natural language processing.
 - **Engineering Principles**: The fundamental scientific and mathematical concepts (e.g., mechanics, kinematics, dynamics, control theory, materials science, electronics) that govern the design, construction, and functional capabilities of humanoid robots.
 - **Real-world Examples**: Concrete instances of existing humanoid robots (e.g., Boston Dynamics' Atlas, Honda's ASIMO, Sanctuary AI's Phoenix), their applications (e.g., disaster response, assistive care, manufacturing), or significant research projects that illustrate theoretical concepts.
+- **RAG Chatbot**: An AI-powered conversational agent that uses Retrieval-Augmented Generation to answer questions. It retrieves relevant passages from the book's text (the context) and then uses a large language model to generate a natural language answer based on that context.
+- **Vector Database (Qdrant)**: A database that stores the book's content as high-dimensional vectors (embeddings), allowing for efficient semantic search to find the most relevant text chunks for a given user query.
+- **Chat History (Neon)**: A record of conversations between users and the chatbot, stored in a Postgres database to allow for future analysis or session persistence.
 
 ## Success Criteria *(mandatory)*
 
@@ -120,3 +146,6 @@ Readers develop an understanding of emerging trends, challenges, and future poss
 - **SC-004**: The book effectively showcases at least 10 distinct current technologies or applications of Physical AI and humanoid robotics through detailed examples.
 - **SC-005**: Readers express increased confidence (measured by self-assessment surveys) in discussing future trends and challenges in the field after completing the book.
 - **SC-006**: The book receives an average rating of 4.0/5.0 or higher for clarity, accuracy, and organization from a panel of independent subject matter expert peer reviewers.
+- **SC-007**: The chatbot can answer 85% of factual questions about the book's content correctly, as verified by a human evaluator.
+- **SC-008**: When a user selects text, the chatbot's response is rated as "highly relevant" to the selection in 90% of cases.
+- **SC-009**: The end-to-end response time for a chatbot query (from question submission to answer display) is less than 3 seconds on average.

@@ -1,6 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+// import webpack from 'webpack'; // Removed explicit import of webpack
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -140,6 +141,25 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+
+  plugins: [
+    function defineBackendUrl() {
+      return {
+        name: 'define-backend-url',
+        configureWebpack() {
+          return {
+            plugins: [
+              new (require('webpack')).DefinePlugin({
+                'process.env.DOCUSAURUS_BACKEND_URL': JSON.stringify(
+                  process.env.DOCUSAURUS_BACKEND_URL || 'http://localhost:8000'
+                ),
+              }),
+            ],
+          };
+        },
+      };
+    },
+  ],
 };
 
 export default config;

@@ -1,46 +1,55 @@
-<!--
-Sync Impact Report:
-Version change: 1.0.0 -> 1.0.1
-Modified principles: Renamed and redefined all core principles
-Added sections: N/A
-Removed sections: N/A
-Templates requiring updates:
-- .specify/templates/plan-template.md: ⚠ pending review for alignment
-- .specify/templates/spec-template.md: ⚠ pending review for alignment
-- .specify/templates/tasks-template.md: ⚠ pending review for alignment
-- .specify/templates/commands/*.md: ✅ updated (no specific updates needed beyond general project name)
-- README.md: ⚠ pending review for project context
-Follow-up TODOs: N/A
--->
-# Physical AI and Humanoid Robotics Book Constitution
+# [PROJECT_NAME] Constitution
+<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 
 ## Core Principles
 
-### I. Research Accuracy
-All factual claims, data, and scientific references must be thoroughly researched, verified against primary sources, and reflect the most current understanding in Physical AI and Humanoid Robotics. Any limitations or uncertainties in research must be clearly articulated.
+### [PRINCIPLE_1_NAME]
+<!-- Example: I. Library-First -->
+[PRINCIPLE_1_DESCRIPTION]
+<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-### II. Writing Clarity
-Content must be written in clear, concise, and accessible language, avoiding unnecessary jargon where possible, and explaining complex concepts in an understandable manner for the target audience. The narrative flow should be logical and easy to follow.
+### [PRINCIPLE_2_NAME]
+<!-- Example: II. CLI Interface -->
+[PRINCIPLE_2_DESCRIPTION]
+<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
 
-### III. Structured Chapter Organization
-Each chapter must have a well-defined structure, with clear introductions, logical progression of topics, cohesive arguments, and conclusive summaries. The overall book structure should provide a comprehensive and coherent journey through the subject matter.
+### [PRINCIPLE_3_NAME]
+<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+[PRINCIPLE_3_DESCRIPTION]
+<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
-### IV. Consistent Tone
-The book must maintain a consistent, authoritative, and engaging tone throughout. It should balance academic rigor with readability, inspiring curiosity and critical thinking without being overly dense or simplistic.
+### [PRINCIPLE_4_NAME]
+<!-- Example: IV. Integration Testing -->
+[PRINCIPLE_4_DESCRIPTION]
+<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
 
-### V. Technical Correctness
-All technical descriptions, diagrams, code examples (if any), and conceptual explanations related to Physical AI, robotics, and associated technologies must be technically precise and free from errors or misleading information.
+### [PRINCIPLE_5_NAME]
+<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
+[PRINCIPLE_5_DESCRIPTION]
+<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-## Additional Considerations
+### [PRINCIPLE_6_NAME]
 
-This project acknowledges the rapid evolution of Physical AI and Humanoid Robotics technology and the need for agile adaptation. It emphasizes interdisciplinary collaboration across AI researchers, roboticists, ethicists, and other relevant experts.
 
-## Content Development Workflow
+[PRINCIPLE__DESCRIPTION]
 
-The content creation process will involve iterative drafting, peer review by subject matter experts, and editorial review to ensure accuracy, depth, clarity, and adherence to all stated principles. All content must be rigorously fact-checked.
+## [SECTION_2_NAME]
+<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+
+[SECTION_2_CONTENT]
+<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+
+## [SECTION_3_NAME]
+<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+
+[SECTION_3_CONTENT]
+<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
 ## Governance
+<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-This Constitution serves as the foundational guiding document for the 'Physical AI and Humanoid Robotics Book' project. Amendments require a formal proposal, review by key stakeholders, and a consensus-driven approval process. Regular reviews will be conducted to ensure ongoing relevance and adherence to stated principles.
+[GOVERNANCE_RULES]
+<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-**Version**: 1.0.1 | **Ratified**: 2025-11-30 | **Last Amended**: 2025-12-01
+**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

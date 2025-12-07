@@ -1,0 +1,6 @@
+fastapi==0.104.1
+uvicorn==0.24.0.post1
+qdrant-client==1.16.1
+
+pydantic==2.5.2
+# Placeholder for LLM library (e.g., openai or anthropic)

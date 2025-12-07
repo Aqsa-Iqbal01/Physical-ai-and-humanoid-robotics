@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  title: RAG Chatbot API
+  version: 1.0.0
+  description: API for the Integrated RAG Chatbot for the Physical AI & Humanoid Robotics book.
+
+paths:
+  /ask:
+    post:
+      summary: Ask a question to the chatbot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+                  description: The client-generated UUID for the user.
+                question:
+                  type: string
+                  description: The user's question.
+                selected_text:
+                  type: string
+                  description: (Optional) A snippet of text selected by the user.
+              required:
+                - user_id
+                - question
+      responses:
+        '200':
+          description: A successful response with the chatbot's answer.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The chatbot's answer.
+                  conversation_id:
+                    type: string
+                    format: uuid
+                    description: The ID of the conversation.
+
+  /index:
+    post:
+      summary: Trigger the indexing of the book's content
+      description: This endpoint starts the process of reading the book's content, chunking it, generating embeddings, and storing them in the Qdrant vector database. This should be a protected endpoint in a real-world scenario.
+      responses:
+        '202':
+          description: The indexing process has been accepted and started.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Content indexing started."

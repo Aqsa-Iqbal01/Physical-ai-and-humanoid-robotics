@@ -65,6 +65,7 @@ export default function HomepageChapters() {
   return (
     <section className={styles.section}>
       <div className="container">
+         {/* Render the Chat component here */}
         <h2 className={styles.heading}>📘 Explore Chapters</h2>
 
         <div className={styles.grid}>
