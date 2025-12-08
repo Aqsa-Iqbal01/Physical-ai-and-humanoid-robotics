@@ -10,16 +10,12 @@ import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
 
-// Import Auth components and hook
-import SignUp from '@site/src/components/Auth/SignUp';
-import SignIn from '@site/src/components/Auth/SignIn';
 import { useAuth } from '@site/src/context/AuthContext';
 
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   const { user, logout, loading } = useAuth();
-  const [showSignIn, setShowSignIn] = useState(true); // Toggle between sign-in and sign-up
 
   if (loading) {
     return <div className="hero hero--primary">Loading authentication...</div>;
@@ -43,19 +39,11 @@ function HomepageHeader() {
               {user.hardware_background && <p>Hardware: {user.hardware_background}</p>}
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Link
-                className="button button--secondary button--lg"
-                to="/docs/chapters/Chapter 01 Introduction to physical ai and humanoid robotics">
-                Get Started →
-              </Link>
-              <button onClick={() => setShowSignIn(true)} className="button button--secondary button--lg">
-                Sign In
-              </button>
-              <button onClick={() => setShowSignIn(false)} className="button button--secondary button--lg">
-                Sign Up
-              </button>
-            </div>
+            <Link
+              className="button button--secondary button--lg"
+              to="/signup">
+              Get Started →
+            </Link>
           )}
         </div>
       </div>
@@ -66,7 +54,6 @@ function HomepageHeader() {
 export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
   const { user, loading } = useAuth();
-  const [showSignIn, setShowSignIn] = useState(true); // Re-initialize state for main content area if needed
 
   return (
     <Layout
@@ -80,12 +67,9 @@ export default function Home(): ReactNode {
             <HomepageChapters />
           </>
         ) : (
-          <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
-            {showSignIn ? (
-              <SignIn />
-            ) : (
-              <SignUp />
-            )}
+          <div style={{ padding: '20px', textAlign: 'center' }}>
+            <p>Please sign in or sign up to access the full content and personalized experience.</p>
+            <p>Click on "Login" or "Sign Up" in the navigation bar.</p>
           </div>
         )}
       </main>
