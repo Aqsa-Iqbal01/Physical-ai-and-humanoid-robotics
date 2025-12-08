@@ -16,8 +16,8 @@
   align-items: center;
   justify-content: center;
   box-shadow: 
-    0 10px 25px -5px rgba(99, 102, 241, 0.4),
-    0 8px 10px -6px rgba(139, 92, 246, 0.3);
+    0 10px 25px -5px #1e1b4b,
+    0 8px 10px -6px #f3f4f6;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -62,7 +62,7 @@
   right: 24px;
   width: 420px;
   height: 600px;
-  background: #1e1b4b; /* Dark blue */
+  background: #f0f0f3; /* Dark blue */
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -83,10 +83,12 @@
   }
 }
 
+
 [data-theme='light'] .chatWindow {
   background: #f3f4f6; /* Light background */
   color: #1e1b4b;
 }
+
 
 /* Chat Header */
 .chatHeader {
@@ -204,7 +206,7 @@
 }
 
 .chatMessages::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #6366f1, #8b5cf6);
+  background: linear-gradient(180deg, #1e1b4b, #e0e7ff);
   border-radius: 10px;
   border: 2px solid #1e1b4b;
 }
@@ -249,11 +251,11 @@
 }
 
 .message.assistant .messageAvatar {
-  background: #202249;
+  background: #e0e7ff;
 }
 
 .message.user .messageAvatar {
-  background: #ec4899;
+  background: #e0e7ff;
 }
 
 .messageContent {
@@ -298,9 +300,9 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #6366f1, #202249);
   animation: bounce 1.4s infinite ease-in-out;
-  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 4px #6366f14d;
 }
 
 .typingIndicator span:nth-child(1) {
@@ -360,7 +362,7 @@
 }
 
 .input:focus {
-  border-color: #8b5cf6;
+  border-color: #6366f1;
   box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
 }
 
@@ -392,7 +394,7 @@
 .sendButton:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
-  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+  background: linear-gradient(135deg, #1e1b4b 0%, #6366f1 100%);
 }
 
 .sendButton:active:not(:disabled) {
@@ -430,4 +432,15 @@
 .input,
 .messageContent {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+/* Fix input text visibility in dark mode */
+[data-theme='dark'] .input {
+  color: #ffffff !important;
+  background: #202249 !important;
+  caret-color: #ffffff !important;
+}
+
+/* Fix placeholder visibility */
+[data-theme='dark'] .input::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
 }

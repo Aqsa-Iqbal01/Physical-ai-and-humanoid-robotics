@@ -39,13 +39,10 @@ const ChatWidget = () => {
   }, [input]);
 
   const formatMessage = (text) => {
-    // Simple markdown-like formatting
     return text
       .split('\n')
       .map((line, i) => {
-        // Bold text
         line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // Bullet points
         if (line.trim().startsWith('•')) {
           return `<div style="margin-left: 8px;">${line}</div>`;
         }
@@ -56,47 +53,36 @@ const ChatWidget = () => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
     setInput('');
-    
-    // Reset textarea height
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
-    
-    // Add user message
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://physical-ai-and-robotics.vercel.app/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userMessage }),
-      });
+      const response = await fetch('http://127.0.0.1:8000/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ question: userMessage, context: "" }),
+});
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-      
-      // Add assistant response
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: data.response 
-      }]);
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: data.answer } // ✅ backend returns 'answer'
+      ]);
     } catch (error) {
       console.error('Error:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: '❌ Sorry! I couldn’t reach the server. Give it a moment and try again.' 
-      }]);
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: '❌ Sorry! I couldn’t reach the server. Give it a moment and try again.' }
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -110,16 +96,12 @@ const ChatWidget = () => {
   };
 
   const quickQuestions = [
-    "Introduction to physical ai and humanoid robotics",
-    "Robot learning and adaptation",
     
   ];
 
   const handleQuickQuestion = (question) => {
     setInput(question);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (inputRef.current) inputRef.current.focus();
   };
 
   return (
@@ -153,37 +135,25 @@ const ChatWidget = () => {
               <div className={styles.botAvatar}>🤖</div>
               <div>
                 <h3 className={styles.headerTitle}>Physical AI Assistant</h3>
-                <p className={styles.headerSubtitle}>Powered by RAG AI</p>
+                <p className={styles.headerSubtitle}></p>
               </div>
             </div>
             <button
               className={styles.closeButton}
               onClick={() => setIsOpen(false)}
               aria-label="Close chat"
-            >
-              ×
-            </button>
+            >×</button>
           </div>
 
           <div className={styles.chatMessages}>
             {messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`${styles.message} ${styles[msg.role]}`}
-              >
-                {msg.role === 'assistant' && (
-                  <div className={styles.messageAvatar}>🤖</div>
-                )}
-                <div 
-                  className={styles.messageContent}
-                  dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }}
-                />
-                {msg.role === 'user' && (
-                  <div className={styles.messageAvatar}>👤</div>
-                )}
+              <div key={idx} className={`${styles.message} ${styles[msg.role]}`}>
+                {msg.role === 'assistant' && <div className={styles.messageAvatar}>🤖</div>}
+                <div className={styles.messageContent} dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+                {msg.role === 'user' && <div className={styles.messageAvatar}>👤</div>}
               </div>
             ))}
-            
+
             {isLoading && (
               <div className={`${styles.message} ${styles.assistant}`}>
                 <div className={styles.messageAvatar}>🤖</div>
@@ -196,14 +166,9 @@ const ChatWidget = () => {
                 </div>
               </div>
             )}
-            
+
             {messages.length === 1 && !isLoading && (
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(2, 1fr)', 
-                gap: '8px',
-                marginTop: '12px' 
-              }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: '12px' }}>
                 {quickQuestions.map((q, idx) => (
                   <button
                     key={idx}
@@ -237,7 +202,7 @@ const ChatWidget = () => {
                 ))}
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -250,23 +215,13 @@ const ChatWidget = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about robotics, ROS 2, simulation..."
+              placeholder="Enter your message"
               disabled={isLoading}
               className={styles.input}
               rows={1}
-              style={{
-                minHeight: '48px',
-                maxHeight: '120px',
-                overflow: 'auto',
-                color: '#1e1b4b'
-              }}
+              style={{ minHeight: '48px', maxHeight: '120px', overflow: 'auto', color: '#1e1b4b' }}
             />
-            <button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              className={styles.sendButton}
-              aria-label="Send message"
-            >
+            <button type="submit" disabled={isLoading || !input.trim()} className={styles.sendButton} aria-label="Send message">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="22" y1="2" x2="11" y2="13" strokeLinecap="round" strokeLinejoin="round"/>
                 <polygon points="22 2 15 22 11 13 2 9 22 2" strokeLinecap="round" strokeLinejoin="round"/>

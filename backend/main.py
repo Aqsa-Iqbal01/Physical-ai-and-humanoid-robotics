@@ -1,134 +1,170 @@
 import os
+import uuid
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict
 from qdrant_client import QdrantClient, models
 
-# For embeddings, we can use a local model or an API-based one like OpenAI
-# For this example, we'll simulate an embedding function or use a simple mock.
-# In a real scenario, you'd integrate with an actual embedding model.
-# from sentence_transformers import SentenceTransformer # if using local models
-# from openai import OpenAI # if using OpenAI embeddings
-
-# Load environment variables from .env file
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path=dotenv_path)
 
 app = FastAPI()
 
-# Initialize Qdrant client
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
+# ENV variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
-QDRANT_COLLECTION_NAME = os.getenv("COLLECTION_NAME", "book_highlights")
+QDRANT_COLLECTION_NAME = os.getenv("COLLECTION_NAME", "robotics_chapters")
 
 if not QDRANT_URL or not QDRANT_API_KEY or not OPENAI_API_KEY:
-    print("QDRANT_URL, QDRANT_API_KEY, and OPENAI_API_KEY must be set in the .env file")
-    # In a production app, you might want to raise an exception or handle this more gracefully
+    raise Exception("Missing environment variables")
 
+# Qdrant client
 qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
-# Initialize embedding model using OpenAI
 from openai import OpenAI
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
-EMBEDDING_MODEL = "text-embedding-ada-002"
-EMBEDDING_DIM = 1536 # Dimension for text-embedding-ada-002
+
+EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_DIM = 1536
 
 def get_embedding(text: str) -> List[float]:
-    response = openai_client.embeddings.create(input=text, model=EMBEDDING_MODEL)
+    response = openai_client.embeddings.create(
+        model=EMBEDDING_MODEL,
+        input=text
+    )
     return response.data[0].embedding
 
-
-# Request model for adding text/highlights
 class AddTextRequest(BaseModel):
     text: str
     metadata: Dict = {}
 
-# Request model for chat questions
 class ChatRequest(BaseModel):
     question: str
-    context: str = "" # User-selected highlight/context
+    context: str
 
 @app.on_event("startup")
 async def startup_event():
-    # Ensure the Qdrant collection exists on startup
     try:
+        # Recreate collection
         qdrant_client.recreate_collection(
             collection_name=QDRANT_COLLECTION_NAME,
-            vectors_config=models.VectorParams(size=EMBEDDING_DIM, distance=models.Distance.COSINE),
+            vectors_config=models.VectorParams(
+                size=EMBEDDING_DIM, distance=models.Distance.COSINE
+            ),
         )
-        print(f"Qdrant collection '{QDRANT_COLLECTION_NAME}' ensured to exist.")
+        print("Qdrant ready.")
+
+        # ------------------------------
+        # Add chapters automatically
+        # ------------------------------
+        chapters_dir = os.path.join(os.path.dirname(__file__), '..', 'my-website', 'docs', 'chapters')
+        if os.path.exists(chapters_dir):
+            for filename in os.listdir(chapters_dir):
+                if filename.endswith(".md"):
+                    filepath = os.path.join(chapters_dir, filename)
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    # Extract title from filename
+                    title = os.path.splitext(filename)[0]
+                    # remove chapter number
+                    title = title.split(' ', 1)[1] if ' ' in title else title
+
+
+                    embedding = get_embedding(content)
+                    qdrant_client.upsert(
+                        collection_name=QDRANT_COLLECTION_NAME,
+                        points=[
+                            models.PointStruct(
+                                id=str(uuid.uuid4()),
+                                vector=embedding,
+                                payload={"text": content, "title": title},
+                            )
+                        ],
+                    )
+            print("Chapters added to Qdrant.")
+        else:
+            print(f"Directory not found: {chapters_dir}")
+
     except Exception as e:
-        print(f"Could not ensure Qdrant collection '{QDRANT_COLLECTION_NAME}': {e}")
+        print("Qdrant error:", e)
 
 @app.post("/add-text")
 async def add_text(request: AddTextRequest):
-    """
-    Endpoint to store new text/highlights in Qdrant.
-    Generates embeddings and stores them along with the text and metadata.
-    """
     try:
         embedding = get_embedding(request.text)
         qdrant_client.upsert(
             collection_name=QDRANT_COLLECTION_NAME,
             points=[
                 models.PointStruct(
-                    id=request.text.__hash__(), # Simple ID generation
+                    id=str(uuid.uuid4()),  # ✅ UUID for safe point ID
                     vector=embedding,
-                    payload={"text": request.text, **request.metadata}
+                    payload={"text": request.text, **request.metadata},
                 )
-            ]
-        ).wait()
-        return {"message": "Text added successfully to Qdrant"}
+            ],
+        )
+        return {"message": "Text added."}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to add text to Qdrant: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    """
-    Endpoint to receive user questions, query Qdrant (for RAG), and return answers.
-    Responses should only be based on the provided context (user-selected highlight).
-    """
-    if not request.context:
-        raise HTTPException(status_code=400, detail="User context (highlighted text) is required for generating a response.")
-
     try:
-        # 1. Embed the user's question
         query_embedding = get_embedding(request.question)
+        print("Query embedding length:", len(query_embedding))
 
-        # 2. Query Qdrant with the embedded question to find relevant passages
-        search_result = qdrant_client.search(
+        # ✅ Use latest Qdrant SDK method
+        results = qdrant_client.search(
             collection_name=QDRANT_COLLECTION_NAME,
             query_vector=query_embedding,
-            limit=3, # Retrieve top 3 relevant passages
-            query_filter=models.Filter(
-                must=[
-                    models.FieldCondition(
-                        key="text",
-                        match=models.MatchText(text=request.context)
-                    )
-                ]
-            )
+            limit=3
         )
 
-        retrieved_texts = [hit.payload['text'] for hit in search_result if 'text' in hit.payload]
-
-        # Combine user-provided context with retrieved context
+        print(f"Qdrant results: {results}")
+        retrieved_texts = [hit.payload["text"] for hit in results]
+        print(f"Retrieved texts: {retrieved_texts}")
         combined_context = " ".join(retrieved_texts + [request.context])
+        print(f"Combined context: {combined_context}")
 
-        if not combined_context.strip():
-            return {"answer": "I couldn't find any relevant information based on your highlight and question."}
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant. Your task is to answer questions based ONLY on the provided context from a book about robotics. If the answer is not present in the context, you MUST say 'I cannot answer this question based on the provided context.' Do not use any of your own knowledge."},
+            {"role": "user", "content": f"Context: {combined_context}\n\nQuestion: {request.question}\n\nAnswer:"}
+        ]
 
-        # 3. Use an LLM to generate a response based *only* on the retrieved passages and the provided context.
-        # This is a placeholder for actual LLM integration (e.g., using OpenAI, Anthropic, or another agent)
-        # For demonstration, we'll craft a simple response.
-        llm_response = f"Based on the relevant information from the book: '{combined_context}', and considering your question about '{request.question}', a potential answer is... (Full LLM integration needed here for a comprehensive answer)."
+        response = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            max_tokens=150
+        )
 
-        return {"answer": llm_response}
+        answer = response.choices[0].message.content.strip()
+
+        return {"answer": answer}
+
     except Exception as e:
-        print(f"Error during chat process: {e}")
-        raise HTTPException(status_code=500, detail=f"An error occurred during chat: {e}")
+        print("Error in /chat:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/ask")  # ❤️ frontend alias
+async def ask_alias(request: ChatRequest):
+    return await chat(request)
 
 @app.get("/")
-async def read_root():
-    return {"message": "RAG Chatbot Backend is running!"}
+async def root():
+    return {"message": "Backend running."}
