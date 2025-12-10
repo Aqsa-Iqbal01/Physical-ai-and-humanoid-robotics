@@ -83,11 +83,25 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
           label: 'Book',
+          to: '/chapters',
         },
+        {
+          label: 'Login',
+          to: '/login',
+          position: 'right',
+        },
+        {
+          label: 'Sign Up',
+          to: '/signup',
+          position: 'right',
+        },
+        {
+          component: '@site/src/theme/NavbarItem/CustomLogoutNavbarItem',
+          position: 'right',
+          to: '#', // Add a dummy 'to' property to satisfy Docusaurus validation
+        },
+
 
       ],
     },
@@ -99,7 +113,7 @@ const config: Config = {
           items: [
             {
               label: 'Book',
-              to: '/docs/chapters/Chapter 01 Introduction to physical ai and humanoid robotics',
+              to: '/chapters',
             },
           ],
         },
@@ -159,6 +173,68 @@ const config: Config = {
         },
       };
     },
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          // Redirect all chapter docs to the protected /chapters page
+          {
+            from: '/docs/chapters/Chapter 01 Introduction to physical ai and humanoid robotics',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 02 Historical context and evolution',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 03 Kinematics and dynamics',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 04 Control systems and actuation',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 05 Leading humanoid robot platforms',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 06 Perception systems',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 07 Real world applications',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 08 Robot learning and adaptation',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 09 Ethical considerations',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 10 AI for decision making',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/Chapter 11 Future trends and research',
+            to: '/chapters',
+          },
+          // Wildcard redirect for any /docs/chapters/ path
+          {
+            from: '/docs/chapters',
+            to: '/chapters',
+          },
+          {
+            from: '/docs/chapters/*',
+            to: '/chapters',
+          },
+        ],
+      },
+    ],
+
   ],
 };
 

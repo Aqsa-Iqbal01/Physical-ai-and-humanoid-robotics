@@ -1,10 +1,13 @@
 import os
 import uuid
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Dict
 from qdrant_client import QdrantClient, models
+
+from .auth_router import router, oauth2_scheme
+from . import better_auth_client
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
@@ -12,8 +15,7 @@ if os.path.exists(dotenv_path):
 
 app = FastAPI()
 
-from backend.auth_router import router as auth_router # Import the auth_router
-app.include_router(auth_router)
+app.include_router(router, prefix="/api")
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -163,6 +165,25 @@ async def chat(request: ChatRequest):
     except Exception as e:
         print("Error in /chat:", e)
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/chapters/{chapter_filename}")
+async def get_chapter_content(chapter_filename: str, token: str = Depends(oauth2_scheme)):
+    # Verify the token to ensure the user is authenticated
+    user = better_auth_client.get_user(token)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
+
+    chapters_dir = os.path.join(os.path.dirname(__file__), '..', 'my-website', 'docs', 'chapters')
+    file_path = os.path.join(chapters_dir, chapter_filename + ".md")
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Chapter not found")
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    return {"title": chapter_filename, "content": content}
+
 
 @app.post("/ask")  # ❤️ frontend alias
 async def ask_alias(request: ChatRequest):

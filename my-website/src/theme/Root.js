@@ -6,9 +6,9 @@ import { AuthProvider } from '@site/src/context/AuthContext'; // Import AuthProv
 // This component wraps the entire Docusaurus app
 export default function Root({ children }) {
   return (
-    <AuthProvider> {/* Wrap with AuthProvider */}
+    <AuthProvider>
       {children}
-      <ChatWidget/>
+     <ChatWidget/>
     </AuthProvider>
   );
 }

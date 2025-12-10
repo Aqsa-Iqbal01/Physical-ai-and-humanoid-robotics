@@ -1,9 +1,13 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
-
+import { useHistory } from '@docusaurus/router'; // Assuming Docusaurus uses this
+import ChatWidget from '../components/ChatWidget/index';
 import styles from './HomepageChapters.module.css';
+import { useAuth } from '../context/AuthContext';
 
 export default function HomepageChapters() {
+  const { user } = useAuth();
+  const history = useHistory();
   const chapters = [
     {
       title: "Introduction Physical AI",
@@ -62,10 +66,18 @@ export default function HomepageChapters() {
     },
   ];
 
+  const handleChapterClick = (e, chapterLink) => {
+    if (!user) {
+      e.preventDefault();
+      history.push(`/login?redirect=${encodeURIComponent(chapterLink)}`);
+    }
+  };
+
   return (
     <section className={styles.section}>
       <div className="container">
          {/* Render the Chat component here */}
+        <ChatWidget />
         <h2 className={styles.heading}>📘 Explore Chapters</h2>
 
         <div className={styles.grid}>
@@ -87,7 +99,11 @@ export default function HomepageChapters() {
               
 
               {/* Button */}
-              <Link className={styles.button} to={chapter.link}>
+              <Link 
+                className={styles.button} 
+                to={chapter.link}
+                onClick={(e) => handleChapterClick(e, chapter.link)}
+              >
                 Read Chapter →
               </Link>
 

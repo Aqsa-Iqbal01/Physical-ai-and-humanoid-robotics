@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import type { ReactNode } from 'react';
+import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
@@ -8,18 +7,15 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageChapters from '@site/src/components/HomepageChapters';
 import Heading from '@theme/Heading';
 
+
 import styles from './index.module.css';
 
-import { useAuth } from '@site/src/context/AuthContext';
+import { AuthProvider, useAuth } from '@site/src/context/AuthContext';
 
 
 function HomepageHeader() {
-  const { siteConfig } = useDocusaurusContext();
-  const { user, logout, loading } = useAuth();
-
-  if (loading) {
-    return <div className="hero hero--primary">Loading authentication...</div>;
-  }
+  const {siteConfig} = useDocusaurusContext();
+  const { user, logout } = useAuth(); // Use the useAuth hook and destructure logout
 
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
@@ -27,22 +23,23 @@ function HomepageHeader() {
         <Heading as="h1" className="hero__title">
           {siteConfig.title}
         </Heading>
+        {user && user.email && ( // Conditionally render welcome message
+          <p className="hero__subtitle">Welcome, {user.email}</p>
+        )}
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           {user ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-              <p>Welcome, {user.email}!</p>
-              <button onClick={logout} className="button button--secondary button--lg">
-                Logout
-              </button>
-              {user.software_background && <p>Software: {user.software_background}</p>}
-              {user.hardware_background && <p>Hardware: {user.hardware_background}</p>}
-            </div>
+            <button
+              className="button button--secondary button--lg"
+              onClick={() => { if (logout) logout(); }} // Defensive check
+            >
+              Logout
+            </button>
           ) : (
             <Link
               className="button button--secondary button--lg"
-              to="/signup">
-              Get Started →
+              to="/login">
+               Get Started →
             </Link>
           )}
         </div>
@@ -52,26 +49,18 @@ function HomepageHeader() {
 }
 
 export default function Home(): ReactNode {
-  const { siteConfig } = useDocusaurusContext();
-  const { user, loading } = useAuth();
-
+  const {siteConfig} = useDocusaurusContext();
   return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <HomepageHeader />
-      <main>
-        {user ? (
-          <>
-            <HomepageFeatures />
-            <HomepageChapters />
-          </>
-        ) : (
-          <div style={{ padding: '20px', textAlign: 'center'}}>
-          
-          </div>
-        )}
-      </main>
-    </Layout>
+    <AuthProvider>
+      <Layout
+        title={`Hello from ${siteConfig.title}`}
+        description="Description will go into a meta tag in <head />">
+        <HomepageHeader />
+        <main>
+          <HomepageFeatures />
+          <HomepageChapters />
+        </main>
+      </Layout>
+    </AuthProvider>
   );
 }

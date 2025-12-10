@@ -1,0 +1,107 @@
+/* my-website/src/components/Signup.module.css */
+.signupContainer {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between sections */
+}
+
+.formSection {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.formSection h3 {
+    margin-top: 0;
+    color: #007bff;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+select.input {
+    appearance: none; /* Remove default arrow */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2C114.7L158.4%2C22.6c-4.7-4.5-12.4-4.5-17.1%2C0L5.4%2C114.7c-4.7%2C4.5-4.7%2C11.8%2C0%2C16.3l8.6%2C8.2c4.7%2C4.5%2C12.4%2C4.5%2C17.1%2C0l118-111.4c4.7-4.5%2C12.4-4.5%2C17.1%2C0l118%2C111.4c4.7%2C4.5%2C12.4%2C4.5%2C17.1%2C0l8.6-8.2C291.7%2C126.5%2C291.7%2C119.2%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 0.7em top 50%, 0 0;
+    background-size: 0.65em auto, 100%;
+}
+
+
+textarea.input {
+    resize: vertical; /* Allow vertical resizing */
+}
+
+.button {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745; /* Green for signup */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.button:disabled {
+    background-color: #8fd09f;
+    cursor: not-allowed;
+}
+
+.error {
+    color: red;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.loginText {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+.loginText a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.loginText a:hover {
+    text-decoration: underline;
+}
