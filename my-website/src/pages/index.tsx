@@ -67,9 +67,8 @@ export default function Home(): ReactNode {
             <HomepageChapters />
           </>
         ) : (
-          <div style={{ padding: '20px', textAlign: 'center' }}>
-            <p>Please sign in or sign up to access the full content and personalized experience.</p>
-            <p>Click on "Login" or "Sign Up" in the navigation bar.</p>
+          <div style={{ padding: '20px', textAlign: 'center'}}>
+          
           </div>
         )}
       </main>

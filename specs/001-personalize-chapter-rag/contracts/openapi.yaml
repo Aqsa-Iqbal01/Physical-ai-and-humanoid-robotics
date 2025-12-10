@@ -1,0 +1,109 @@
+openapi: 3.0.0
+info:
+  title: Personalized Chapter RAG System API
+  version: 1.0.0
+  description: API for personalizing book chapters using RAG and managing user bonus points.
+servers:
+  - url: http://localhost:8000
+    description: Local Development Server
+tags:
+  - name: Personalization
+    description: Chapter personalization operations
+
+paths:
+  /personalize-chapter:
+    post:
+      summary: Personalize a book chapter for a user
+      operationId: personalizeChapter
+      tags:
+        - Personalization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalizationRequest'
+      responses:
+        '200':
+          description: Successfully personalized chapter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalizationResponse'
+        '400':
+          description: Invalid request payload or missing parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User or Chapter not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error during personalization process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    PersonalizationRequest:
+      type: object
+      required:
+        - user_id
+        - chapter_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: Unique identifier of the user.
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        chapter_id:
+          type: string
+          format: uuid
+          description: Unique identifier of the chapter to be personalized.
+          example: "f9e8d7c6-b5a4-3210-fedc-ba9876543210"
+        selected_text:
+          type: string
+          nullable: true
+          description: Optional text selected by the user within the chapter to influence personalization.
+          example: "The quick brown fox jumps over the lazy dog."
+
+    PersonalizationResponse:
+      type: object
+      required:
+        - personalized_text
+        - awarded_bonus
+        - points_added
+      properties:
+        personalized_text:
+          type: string
+          description: The AI-generated personalized content for the chapter.
+          example: "Based on your preferences for historical context, the narrative begins with..."
+        awarded_bonus:
+          type: boolean
+          description: Indicates if bonus points were awarded to the user for this personalization.
+          example: true
+        points_added:
+          type: integer
+          description: The number of bonus points awarded (0 or 50).
+          example: 50
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: A unique error code.
+          example: "CHAPTER_NOT_FOUND"
+        message:
+          type: string
+          description: A human-readable description of the error.
+          example: "The requested chapter could not be found."

@@ -12,6 +12,9 @@ if os.path.exists(dotenv_path):
 
 app = FastAPI()
 
+from backend.auth_router import router as auth_router # Import the auth_router
+app.include_router(auth_router)
+
 
 from fastapi.middleware.cors import CORSMiddleware
 

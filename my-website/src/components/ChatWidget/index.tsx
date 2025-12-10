@@ -1,15 +1,30 @@
-// src/components/ChatWidget/index.js
+// src/components/ChatWidget/index.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
+import { useAuth } from '@site/src/context/AuthContext'; // NEW IMPORT
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: '👋 Hi! I\'m your **Physical AI & Humanoid Robotics** assistant. What would you like to learn or discuss from the book today?'
+  const { user } = useAuth(); // Already added in T016
+
+  // Personalize initial greeting based on user's background
+  const initialGreeting = () => {
+    let greeting = '👋 Hi! I\'m your **Physical AI & Humanoid Robotics** assistant. What would you like to learn or discuss from the book today?';
+    if (user && user.metadata && user.metadata.software_background) {
+      const experience = user.metadata.software_background.experience_level.toLowerCase();
+      if (experience === 'expert') {
+        greeting = '🤖 Greetings, expert in AI & Robotics! Ready for a deep dive or complex discussion?';
+      } else if (experience === 'intermediate') {
+        greeting = '👋 Hello there! What\'s your next challenge in AI & Robotics today?';
+      } else { // Beginner or any other
+        greeting = '👋 Hi, aspiring innovator! How can I help you explore Physical AI & Humanoid Robotics today?';
+      }
     }
-  ]);
+    return [{ role: 'assistant', content: greeting }];
+  };
+
+  const [messages, setMessages] = useState(initialGreeting); // Use the personalized greeting
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);

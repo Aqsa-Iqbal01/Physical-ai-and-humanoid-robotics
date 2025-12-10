@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '@site/src/context/AuthContext'; // NEW IMPORT
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
@@ -6,35 +7,16 @@ const SignIn = () => {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
 
+    const { login } = useAuth(); // Get login from context
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setMessage('');
 
-        // The backend expects form data for the token endpoint
-        const formData = new URLSearchParams();
-        formData.append('username', email);
-        formData.append('password', password);
-
         try {
-            const response = await fetch('http://localhost:8000/token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData,
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.detail || 'Failed to sign in');
-            }
-
-            const data = await response.json();
-            
-            // In a real app, you'd use context to store the user state
-            // For now, we'll just use localStorage
-            localStorage.setItem('accessToken', data.access_token);
+            // Replaced internal fetch logic and localStorage handling with call to AuthContext's login
+            await login(email, password);
             
             setMessage('Successfully signed in!');
             
@@ -48,30 +30,30 @@ const SignIn = () => {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
+        <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', border: '1px solid #555', borderRadius: '5px' , backgroundColor: '#282c34', color: 'white' }}>
             <h2>Sign In</h2>
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '10px' }}>
-                    <label>Email (Username):</label>
+                    <label style={{color: 'white'}}>Email</label>
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px',  backgroundColor: '#eee9e9ff' }}
                     />
                 </div>
-                <div style={{ marginBottom: '20px' }}>
-                    <label>Password:</label>
+                <div style={{ marginBottom: '20px'}}>
+                    <label style={{color: 'white'}}>Password</label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px', backgroundColor: '#eee9e9ff' }}
                     />
                 </div>
-                <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px' }}>
+                <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#2f77c4ff', color: 'white', border: 'none', borderRadius: '5px' }}>
                     Sign In
                 </button>
             </form>

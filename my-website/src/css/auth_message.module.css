@@ -1,0 +1,26 @@
+/**
+ * CSS Modules for the authentication message on the homepage.
+ */
+
+.authMessageContainer {
+  padding: var(--ifm-spacing-vertical-xl) var(--ifm-spacing-horizontal-xl);
+  text-align: center;
+  background-color: var(--ifm-color-emphasis-100); /* Darker background */
+  color: var(--ifm-color-white);             /* Light text color */
+  border-radius: var(--ifm-border-radius);
+  box-shadow: var(--ifm-global-shadow-lw); /* Subtle shadow */
+  max-width: 600px;
+  margin: var(--ifm-spacing-vertical-xxl) auto;
+  border: 1px solid var(--ifm-color-emphasis-200); /* Lighter border */
+}
+
+.authMessagePrimary {
+  font-size: 1.25rem;
+  font-weight: var(--ifm-font-weight-semibold);
+  margin-bottom: var(--ifm-spacing-vertical);
+}
+
+.authMessageSecondary {
+  font-size: 1rem;
+  color: var(--ifm-color-secondary-light); /* Slightly muted color */
+}

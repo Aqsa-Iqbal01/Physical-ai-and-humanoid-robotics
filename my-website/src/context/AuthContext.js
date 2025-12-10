@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
             return;
         }
         try {
-            const response = await fetch(`${API_BASE_URL}/users/me/`, {
+            const response = await fetch(`${API_BASE_URL}/auth/me`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
         formData.append('username', email);
         formData.append('password', password);
 
-        const response = await fetch(`${API_BASE_URL}/token`, {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -62,7 +62,10 @@ export const AuthProvider = ({ children }) => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.detail || 'Login failed');
+            // Improved error handling: check for specific detail message
+            throw new Error(errorData.detail && typeof errorData.detail === 'string' 
+                            ? errorData.detail 
+                            : 'Login failed: An unexpected error occurred.');
         }
 
         const data = await response.json();
@@ -73,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const signup = async (email, password, softwareBackground, hardwareBackground) => {
-        const response = await fetch(`${API_BASE_URL}/users`, {
+        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -88,7 +91,10 @@ export const AuthProvider = ({ children }) => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.detail || 'Signup failed');
+            // Improved error handling: check for specific detail message
+            throw new Error(errorData.detail && typeof errorData.detail === 'string' 
+                            ? errorData.detail 
+                            : 'Signup failed: An unexpected error occurred.');
         }
         const data = await response.json();
         return data;
