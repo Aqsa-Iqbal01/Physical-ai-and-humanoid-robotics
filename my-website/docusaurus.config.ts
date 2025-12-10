@@ -88,16 +88,7 @@ const config: Config = {
           position: 'left',
           label: 'Book',
         },
-        {
-          to: '/login', // Link to your login page
-          label: 'Login',
-          position: 'right',
-        },
-        {
-          to: '/signup', // Link to your signup page
-          label: 'Sign Up',
-          position: 'right',
-        },
+
       ],
     },
     footer: {
